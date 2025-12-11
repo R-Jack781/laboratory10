@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db_lab9
+    restart: always
+    environment:
+      POSTGRES_USER: user_bugtracker
+      POSTGRES_PASSWORD: password_bugtracker
+      POSTGRES_DB: bugtracker_db
+    ports:
+      - "5432:5432" 
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  
+  adminer:
+    image: adminer:latest
+    container_name: adminer_client_lab9
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  web:
+    build: . 
+    container_name: django_bugtracker_app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000" 
+    environment:
+      DB_NAME: bugtracker_db
+      DB_USER: user_bugtracker
+      DB_PASSWORD: password_bugtracker
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      - db

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна 10</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        h1, h2 {
+            color: #004d40;
+            border-bottom: 2px solid #004d40;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h1 {
+            font-size: 2.5em;
+            text-align: center;
+        }
+        .student-info { 
+            font-style: italic; 
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .data-table { 
+            width: 100%; 
+            margin: 20px 0; 
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .data-table th { 
+            background-color: #00695c;
+            color: white; 
+            padding: 12px 15px; 
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #004d40;
+        }
+        .data-table td {
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            word-wrap: break-word; 
+            vertical-align: top;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .data-table tbody tr:hover {
+            background-color: #e0f2f1;
+        }
+        .critical-error {
+            background-color: #ffcdd2;
+            font-weight: bold;
+        }
+        .important-error {
+            background-color: #ffecb3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{ project_name }}</h1>
+
+    <p class="student-info">{{ student_info }}</p>
+
+    <h2>Таблиця "Програмісти"</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Прізвище</th>
+                <th>Ім'я</th>
+                <th>Телефон</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in programmers %}
+            <tr>
+                <td>{{ p.pk }}</td>
+                <td>{{ p.surname }}</td>
+                <td>{{ p.first_name }}</td>
+                <td>{{ p.phone }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Таблиця "Помилки"</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Опис помилки</th>
+                <th>Дата надходження</th>
+                <th>Рівень</th>
+                <th>Категорія</th>
+                <th>Джерело</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in errors %}
+            <tr class="{% if e.error_level == 'critical' %}critical-error{% elif e.error_level == 'important' %}important-error{% endif %}">
+                <td>{{ e.pk }}</td>
+                <td>{{ e.error_description|truncatechars:70 }}</td>
+                <td>{{ e.date_received|date:"Y-m-d" }}</td>
+                <td>{{ e.get_error_level_display }}</td>
+                <td>{{ e.get_category_display }}</td>
+                <td>{{ e.get_source_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Таблиця "Виправлення помилок"</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Код виправлення</th>
+                <th>Помилка (Опис)</th>
+                <th>Програміст</th>
+                <th>Дата початку</th>
+                <th>Термін (дні)</th>
+                <th>Вартість 1 дня</th>
+                <th>Загальна вартість</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in bug_fixes %}
+            <tr>
+                <td>{{ f.pk }}</td>
+                <td>{{ f.error.error_description|truncatechars:50 }}</td>
+                <td>{{ f.programmer.surname }} {{ f.programmer.first_name }}</td>
+                <td>{{ f.start_date|date:"Y-m-d" }}</td>
+                <td>{{ f.duration_days }}</td>
+                <td>{{ f.cost_per_day }}</td>
+                <td>{{ f.total_cost }}</td> </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
